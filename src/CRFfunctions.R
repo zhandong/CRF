@@ -99,27 +99,40 @@ GGM.linearCRF.path.network.stars = function(Y,X,nlams,stars.thresh,niter=100)
 		print("Number of rows is inconsistent!!!!!")	
 	}
 	est=c()
+	est$merge=list()
 	for(i in 1:niter){
+		 mes <- paste(c("Conducting Subsampling....in progress:", 
+                    floor(100 * i/niter), "%"), collapse = "")
+                  cat(mes, "\r")
+                  flush.console()
+
+		
 		if(n>144){
 			subsample.ratio= 10*sqrt(n)/n
 		}else{
 			subsample.ratio = 0.8
 		}
 		index = sample(1:nrow(Y),size= floor(n*subsample.ratio),replace=FALSE)
-		tmp=GGM.linearCRF.path.network(Y[,index],X[,index,],nlams=nlams)
-		for(j in 1:nlam)
-		est$merge[[j]] = est$merge[[j]] + tmp$Ahat[,,j]/niter
+		tmp=GGM.linearCRF.path.network(Y[index,],X[index,],nlams=nlams)
+		for(j in 1:nlams){
+			if(i ==1){
+				est$merge[[j]] =   tmp$Ahat[,,j]/niter 
+			}else{
+				est$merge[[j]] =   tmp$Ahat[,,j]/niter + est$merge[[j]]
+			}
+		}
 	}
 	
 	
-	for(j in 1:nlam){
+	for(j in 1:nlams){
 		tmp = est$merge[[j]]
 		index = 1:p+(0:(p-1))*p
 		tmp= tmp[-index,]
-		est$var[j] = 4*tmp*(1-tmp)/(p*(p-1)*q)	
+		est$var[j] = 4*sum(tmp*(1-tmp))/(p*(p-1)*q)	
 	}
 	est$opt.index = max(which.max(est$var >=  stars.thresh)[1] - 1, 1)
 	est$path = GGM.linearCRF.path.network(Y,X,nlams=nlams)
+	
 	return(est)
 }
 
