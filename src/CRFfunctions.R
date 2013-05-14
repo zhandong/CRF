@@ -25,8 +25,107 @@ GGM.linearCRF.path.neighborhood = function(Y,X,node,nlams)
   ind = (ncol(X)+1):(ncol(X)+ncol(Y)-1)
   XY = t(apply(cbind(X,Y[,-node]),1,mykron,ind))
   fit = glmnet(XY,Y[,node],family="gaussian",nlambda=nlams)
-  return(list(lams=fit$lambda,Coefhat=fit$beta,Bhat=array(fit$beta,c(ncol(Y)-1,ncol(X),nlams))))  
+#  return(list(lams=fit$lambda,Coefhat=fit$beta,Bhat=array(fit$beta,c(ncol(Y)-1,ncol(X),nlams))))  
+  output =list(lams=fit$lambda,Coefhat=fit$beta,Bhat=array(fit$beta,c(ncol(Y)-1,ncol(X),nlams)))
+  tmp= array(0,dim=c(ncol(Y),ncol(X),nlams))
+  if(node ==1){
+    tmp[(node+1):ncol(Y),,]= output$Bhat
+  } else if(node == ncol(Y)){
+  	tmp[1:(node-1),,]=output$Bhat
+  } else{
+    tmp[1:(node-1),,]=output$Bhat[1:(node-1),,]
+    tmp[(node+1):ncol(Y),,]= output$Bhat[node:(ncol(Y)-1),,]
+  }
+  output$Bhat = tmp;
+  return(output)
 }
+
+
+
+#################
+#neighborhood selection for Gaussian linear combo model
+#assumes Y is n x p and X is n x q & node is the index of the node of interest
+#each of the covariates X should be of the same type
+#as the corresponding coeffiicents are regularized by the same amount
+#Returns:
+#Bhat = coefficients arranged as a 3D array: p^2 x q x nlams
+#Ahat = adjcency matrix a 3D array: p^2 x q x nlams
+
+GGM.linearCRF.path.network = function(Y,X,nlams,opt ="and")
+{	
+	p=ncol(Y)
+	q=ncol(X)
+	Bhat = array(0,dim=c(p^2,q,nlams))
+	for(i in 1:ncol(Y))
+	{
+		nodei= GGM.linearCRF.path.neighborhood(Y,X,node=i,nlams=nlams)	
+		index = (1:p)+(i-1)*p
+		Bhat[index,,] = nodei$Bhat
+	}
+	
+	Ahat = Bhat
+	for(i in 1:q){
+		for(j in 1:nlams){
+			tmp = matrix(Bhat[,i,j],nrow=p,ncol=p,byrow=F)
+			if(opt == "and"){
+				tmp = sign(abs(tmp)>0.0000001)
+				tmp = sign(tmp*t(tmp))
+			}else if (opt == "or"){
+				tmp = sign(abs(tmp)>0.0000001)
+				tmp = sign(tmp+t(tmp))
+			}
+			Ahat[,i,j]=c(tmp)		
+		}
+	}
+	return(list(Bhat=Bhat,Ahat=Ahat))
+}
+
+
+#################
+#star selection for Gaussian linear combo model
+#assumes Y is n x p and X is n x q & node is the index of the node of interest
+#each of the covariates X should be of the same type
+#as the corresponding coeffiicents are regularized by the same amount
+#Returns:
+#Bhat = coefficients arranged as a 3D array: p^2 x q x nlams
+
+GGM.linearCRF.path.network.stars = function(Y,X,nlams,stars.thresh,niter=100)
+{	
+	p=ncol(Y)
+	q=ncol(X)
+	if(nrow(Y)==nrow(X)){
+		n = nrow(Y)
+	}else{
+		print("Number of rows is inconsistent!!!!!")	
+	}
+	est=c()
+	for(i in 1:niter){
+		if(n>144){
+			subsample.ratio= 10*sqrt(n)/n
+		}else{
+			subsample.ratio = 0.8
+		}
+		index = sample(1:nrow(Y),size= floor(n*subsample.ratio),replace=FALSE)
+		tmp=GGM.linearCRF.path.network(Y[,index],X[,index,],nlams=nlams)
+		for(j in 1:nlam)
+		est$merge[[j]] = est$merge[[j]] + tmp$Ahat[,,j]/niter
+	}
+	
+	
+	for(j in 1:nlam){
+		tmp = est$merge[[j]]
+		index = 1:p+(0:(p-1))*p
+		tmp= tmp[-index,]
+		est$var[j] = 4*tmp*(1-tmp)/(p*(p-1)*q)	
+	}
+	est$opt.index = max(which.max(est$var >=  stars.thresh)[1] - 1, 1)
+	est$path = GGM.linearCRF.path.network(Y,X,nlams=nlams)
+	return(est)
+}
+
+
+
+
 
 
 
