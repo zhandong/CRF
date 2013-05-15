@@ -56,6 +56,8 @@ GGM.linearCRF.path.network = function(Y,X,nlams,opt ="and")
 	p=ncol(Y)
 	q=ncol(X)
 	Bhat = array(0,dim=c(p^2,q,nlams))
+	
+	
 	for(i in 1:ncol(Y))
 	{
 		nodei= GGM.linearCRF.path.neighborhood(Y,X,node=i,nlams=nlams)	

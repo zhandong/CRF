@@ -1,0 +1,512 @@
+XY = t(apply(cbind(X,Y[,-node]),1,mykron,ind))
+fit = glmnet(XY,Y[,node],family="gaussian",nlambda=nlams)
+output =list(lams=fit$lambda,Coefhat=fit$beta,Bhat=array(fit$beta,c(ncol(Y)-1,ncol(X),nlams)))
+tmp= array(0,dim=c(ncol(Y),ncol(X),nlams))
+tmp[1:(node-1),,]=output$Bhat[1:(node-1),,]
+tmp[(node+1):ncol(Y),,]= output$Bhat[node:ncol(Y),,]
+dim(tmp)
+ncol(Y)
+dim(output$Bhat)
+tmp[(node+1):ncol(Y),,]= output$Bhat[node:(ncol(Y)-1),,]
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/CRFfunctions.R")
+GGM.linearCRF.path.network(Y,X,20)
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/CRFfunctions.R")
+tmp=GGM.linearCRF.path.network(Y,X,20)
+tm
+tmp
+?huge
+huge
+huge.select
+tmp
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/CRFfunctions.R")
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/CRFfunctions.R")
+tmp=GGM.linearCRF.path.network(Y,X,20)
+tmp$Ahat
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/CRFfunctions.R")
+tmp=GGM.linearCRF.path.network(Y,X,20)
+tmp$Ahat
+A = matrix(1:20,nrow=5)
+A
+c(A)
+B= c(A)
+matrix(B,nrow=5)
+mtp
+tmp$Ahat
+tmp$Ahat[,,1]
+tmp$Ahat[,1,1]
+tmp$Ahat[,1,10]
+matrix(tmp$Ahat[,1,10],nrow=5)
+matrix(tmp$Ahat[,1,5],nrow=5)
+p = 5
+1:p+(0:(p-1))*p
+huge.select
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/CRFfunctions.R")
+est=GGM.linearCRF.path.network.stars(Y,X,20,0.05)
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/CRFfunctions.R")
+est=GGM.linearCRF.path.network.stars(Y,X,20,0.05)
+stars.thresh= 0.05
+niter = 100
+p=ncol(Y)#
+	q=ncol(X)#
+	if(nrow(Y)==nrow(X)){#
+		n = nrow(Y)#
+	}else{#
+		print("Number of rows is inconsistent!!!!!")	#
+	}#
+	est=c()
+for(i in 1:niter){#
+		if(n>144){#
+			subsample.ratio= 10*sqrt(n)/n#
+		}else{#
+			subsample.ratio = 0.8#
+		}#
+		index = sample(1:nrow(Y),size= floor(n*subsample.ratio),replace=FALSE)#
+		tmp=GGM.linearCRF.path.network(Y[,index],X[,index,],nlams=nlams)#
+		for(j in 1:nlam)#
+		est$merge[[j]] = est$merge[[j]] + tmp$Ahat[,,j]/niter#
+	}
+i
+if(n>144){#
+			subsample.ratio= 10*sqrt(n)/n#
+		}else{#
+			subsample.ratio = 0.8#
+		}
+subsample.ratio
+index = sample(1:nrow(Y),size= floor(n*subsample.ratio),replace=FALSE)
+index
+tmp=GGM.linearCRF.path.network(Y[,index],X[,index,],nlams=nlams)
+p=ncol(Y)#
+	q=ncol(X)#
+	Bhat = array(0,dim=c(p^2,q,nlams))#
+	for(i in 1:ncol(Y))#
+	{#
+		nodei= GGM.linearCRF.path.neighborhood(Y,X,node=i,nlams=nlams)	#
+		index = (1:p)+(i-1)*p#
+		Bhat[index,,] = nodei$Bhat#
+	}
+Ahat = Bhat
+for(i in 1:q){#
+		for(j in 1:nlams){#
+			tmp = matrix(Bhat[,i,j],nrow=p,ncol=p,byrow=F)#
+			if(opt == "and"){#
+				tmp = sign(abs(tmp)>0.0000001)#
+				tmp = sign(tmp*t(tmp))#
+			}else if (opt == "or"){#
+				tmp = sign(abs(tmp)>0.0000001)#
+				tmp = sign(tmp+t(tmp))#
+			}#
+			Ahat[,i,j]=c(tmp)		#
+		}#
+	}
+opt=and
+opt = "and"
+for(i in 1:q){#
+		for(j in 1:nlams){#
+			tmp = matrix(Bhat[,i,j],nrow=p,ncol=p,byrow=F)#
+			if(opt == "and"){#
+				tmp = sign(abs(tmp)>0.0000001)#
+				tmp = sign(tmp*t(tmp))#
+			}else if (opt == "or"){#
+				tmp = sign(abs(tmp)>0.0000001)#
+				tmp = sign(tmp+t(tmp))#
+			}#
+			Ahat[,i,j]=c(tmp)		#
+		}#
+	}
+est=GGM.linearCRF.path.network.stars(Y,X,20,0.05)
+traceback()
+p=ncol(Y)#
+	q=ncol(X)#
+	if(nrow(Y)==nrow(X)){#
+		n = nrow(Y)#
+	}else{#
+		print("Number of rows is inconsistent!!!!!")	#
+	}#
+	est=c()
+dim(Y)
+dim(X)
+p=ncol(Y)#
+	q=ncol(X)#
+	if(nrow(Y)==nrow(X)){#
+		n = nrow(Y)#
+	}else{#
+		print("Number of rows is inconsistent!!!!!")	#
+	}#
+	est=c()#
+	for(i in 1:niter){#
+		if(n>144){#
+			subsample.ratio= 10*sqrt(n)/n#
+		}else{#
+			subsample.ratio = 0.8#
+		}#
+		index = sample(1:nrow(Y),size= floor(n*subsample.ratio),replace=FALSE)#
+		tmp=GGM.linearCRF.path.network(Y[index,],X[index,],nlams=nlams)#
+		for(j in 1:nlam)#
+		est$merge[[j]] = est$merge[[j]] + tmp$Ahat[,,j]/niter#
+	}
+p=ncol(Y)#
+	q=ncol(X)#
+	if(nrow(Y)==nrow(X)){#
+		n = nrow(Y)#
+	}else{#
+		print("Number of rows is inconsistent!!!!!")	#
+	}#
+	est=c()#
+	for(i in 1:niter){#
+		if(n>144){#
+			subsample.ratio= 10*sqrt(n)/n#
+		}else{#
+			subsample.ratio = 0.8#
+		}#
+		index = sample(1:nrow(Y),size= floor(n*subsample.ratio),replace=FALSE)#
+		tmp=GGM.linearCRF.path.network(Y[index,],X[index,],nlams=nlams)#
+		for(j in 1:nlams)#
+		est$merge[[j]] = est$merge[[j]] + tmp$Ahat[,,j]/niter#
+	}
+traceback()
+est=GGM.linearCRF.path.network.stars(Y,X,20,0.05)
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/CRFfunctions.R")
+est=GGM.linearCRF.path.network.stars(Y,X,20,0.05)
+traceback()
+p=ncol(Y)#
+	q=ncol(X)#
+	if(nrow(Y)==nrow(X)){#
+		n = nrow(Y)#
+	}else{#
+		print("Number of rows is inconsistent!!!!!")	#
+	}#
+	est=c()
+i
+if(n>144){#
+			subsample.ratio= 10*sqrt(n)/n#
+		}else{#
+			subsample.ratio = 0.8#
+		}#
+		index = sample(1:nrow(Y),size= floor(n*subsample.ratio),replace=FALSE)#
+		tmp=GGM.linearCRF.path.network(Y[index,],X[index,],nlams=nlams)
+for(j in 1:nlams)#
+		est$merge[[j]] = est$merge[[j]] + tmp$Ahat[,,j]/niter
+tmp$Ahat
+est$merge[[j]] + tmp$Ahat[,,j]/niter
+est$merge=c()
+for(j in 1:nlams)#
+		est$merge[[j]] = est$merge[[j]] + tmp$Ahat[,,j]/niter
+tmp$Ahat[,,j]/niter
+est$merge[[j]] + tmp$Ahat[,,j]/niter
+tmp$Ahat[,,j]/niter + est$merge[[j]]
+est$merge=list()
+tmp$Ahat[,,j]/niter + est$merge[[j]]
+j
+est$merge[[j]]
+est$merge[[1]]
+est$merge
+est$merge[[j]] =   tmp$Ahat[,,j]/niter + est$merge[[j]]
+for(j in 1:nlams)#
+		est$merge[[j]] =   tmp$Ahat[,,j]/niter + est$merge[[j]]
+est=c()#
+	est$merge=list()#
+	for(i in 1:niter){#
+		if(n>144){#
+			subsample.ratio= 10*sqrt(n)/n#
+		}else{#
+			subsample.ratio = 0.8#
+		}#
+		index = sample(1:nrow(Y),size= floor(n*subsample.ratio),replace=FALSE)#
+		tmp=GGM.linearCRF.path.network(Y[index,],X[index,],nlams=nlams)#
+		for(j in 1:nlams){#
+			if(i ==1){#
+				est$merge[[j]] =   tmp$Ahat[,,j]/niter #
+			}else{#
+				est$merge[[j]] =   tmp$Ahat[,,j]/niter + est$merge[[j]]#
+			}#
+		}#
+	}
+for(j in 1:nlam){#
+		tmp = est$merge[[j]]#
+		index = 1:p+(0:(p-1))*p#
+		tmp= tmp[-index,]#
+		est$var[j] = 4*tmp*(1-tmp)/(p*(p-1)*q)	#
+	}
+for(j in 1:nlams){#
+		tmp = est$merge[[j]]#
+		index = 1:p+(0:(p-1))*p#
+		tmp= tmp[-index,]#
+		est$var[j] = 4*tmp*(1-tmp)/(p*(p-1)*q)	#
+	}
+j
+tmp = est$merge[[j]]
+tmp
+index = 1:p+(0:(p-1))*p
+index
+tmp= tmp[-index,]
+tmp
+4*tmp*(1-tmp)/(p*(p-1)*q)
+est$var[j] = 4*sum(tmp*(1-tmp))/(p*(p-1)*q)
+4*sum(tmp*(1-tmp))/(p*(p-1)*q)
+for(j in 1:nlams){#
+		tmp = est$merge[[j]]#
+		index = 1:p+(0:(p-1))*p#
+		tmp= tmp[-index,]#
+		est$var[j] = 4*sum(tmp*(1-tmp))/(p*(p-1)*q)	#
+	}
+est$var
+est$opt.index = max(which.max(est$var >=  stars.thresh)[1] - 1, 1)
+est$opt.index
+est$path = GGM.linearCRF.path.network(Y,X,nlams=nlams)
+est$path
+est$path$Ahat[est$opt.index]
+est$opt.index = max(which.max(est$var >=  stars.thresh)[1] - 1, 1)
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/CRFfunctions.R")
+est=GGM.linearCRF.path.network.stars(Y,X,20,0.05)
+est
+est$opt.index
+est$var
+huge.select
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/CRFfunctions.R")
+est=GGM.linearCRF.path.network.stars(Y,X,20,0.05)
+Y = matrix(rnorm(1000),nrow=200)#
+X = matrix(rnorm(600),nrow=200)
+est=GGM.linearCRF.path.network.stars(Y,X,20,0.05)
+est$opt.index
+est$var
+install.packages('CNTools')
+source("http://bioconductor.org/biocLite.R")#
+    biocLite("CNTools")
+library(CNTools)
+ls()
+library(CNTools)
+data("sampleData")
+sampleData
+dim(sampleData)
+class(sampleData)
+str(sampleData)
+getwd()
+fdir = "../dat/TCGA-GBM/CNV_Array/HMS__HG-CGH-415K_G4124A/Level_3/"
+tcgaData = c()#
+#
+for(i in dir(fdir,full.names=T))#
+{#
+	tmp =scan(i,what="string",skip=1)#
+	tmp = matrix(tmp,ncol=6,byrow=T)#
+	#if(sum(is.na(as.numeric(tmp[,3])))){print(i)}#
+		tcgaData = cbind(tcgaData,as.numeric(tmp[,3]))#
+	#return(tcgaData)#
+#
+}
+warnings()
+head(tcgaData)
+i
+tmp =scan(i,what="string",skip=1)
+tmp
+tmp = matrix(tmp,ncol=6,byrow=T)
+tmp
+tcgaData = c()#
+#
+for(i in dir(fdir,full.names=T))#
+{#
+	tmp =scan(i,what="string",skip=1)#
+	tmp = matrix(tmp,ncol=6,byrow=T)#
+	#if(sum(is.na(as.numeric(tmp[,3])))){print(i)}#
+		tcgaData = rbind(tcgaData,as.numeric(tmp[,3]))#
+	#return(tcgaData)#
+#
+}
+head(tcgaData)
+tcgaData = c()#
+#
+for(i in dir(fdir,full.names=T))#
+{#
+	tmp =scan(i,what="string",skip=1)#
+	tmp = matrix(tmp,ncol=6,byrow=T)#
+	#if(sum(is.na(as.numeric(tmp[,3])))){print(i)}#
+		tcgaData = rbind(tcgaData,tmp)#
+	#return(tcgaData)#
+#
+}
+head(tcgaData)
+tcgaData = as.data.frame(tcgaData)
+str(tcgaData)
+str(sampleData)
+cghData$ID = as.character(tcgaData[,1])
+cghData = data.frame()#
+	cghData$ID = as.character(tcgaData[,1])
+cghData = data.frame()
+tcgaData[1:5,1]
+as.character(tcgaData[1:5,1])
+cghData$ID = as.character(tcgaData[1:5,1])
+?scan
+tcgaData = c()#
+#
+for(i in dir(fdir,full.names=T))#
+{#
+	tmp =scan(i,what="character",skip=1)#
+	tmp = matrix(tmp,ncol=6,byrow=T)#
+	tcgaData = rbind(tcgaData,tmp)#
+	cghData = as.data.frame(tcgaData)#
+#
+}
+for(i in dir(fdir,full.names=T))#
+{#
+	tmp =scan(i,what="character",skip=1)#
+	tmp = matrix(tmp,ncol=6,byrow=T)#
+	tcgaData = rbind(tcgaData,tmp)#
+	#cghData = as.data.frame(tcgaData#
+}
+head(tcgaData)
+cghData = as.data.frame(tcgaData#
+)
+str(cghData)
+tcgaData = as.data.frame(tcgaData)
+str(sampleData)
+cghData = data.frame(#
+	ID = as.character(tcgaData[,1]),#
+	chrom = as.character(tcgaData[,2]),#
+	loc.start = as.integer(tcgaData[,3]),#
+	loc.end = as.integer(tcgaData[,4]),#
+	num.mar = as.integer(tcgaData[,5]),#
+	seg.mean = as.numeric(tcgaData[,6])#
+)
+str(cghData)
+ID = as.character(tcgaData[,1],stringsAsFactors=T),
+cghData = data.frame(#
+	ID = as.character(tcgaData[,1]),#
+	chrom = as.character(tcgaData[,2]),#
+	loc.start = as.integer(tcgaData[,3]),#
+	loc.end = as.integer(tcgaData[,4]),#
+	num.mar = as.integer(tcgaData[,5]),#
+	seg.mean = as.numeric(tcgaData[,6])#
+)
+cghData$ID
+str(cghData)
+tcgaData[1:10,]
+cghData[1:10,]
+tcgaData[1:10,1]
+as.character(tcgaData[1:10,1])
+cghData = data.frame(#
+	ID = as.character(tcgaData[,1]),#
+	chrom = as.character(tcgaData[,2]),#
+	loc.start = as.integer(tcgaData[,3]),#
+	loc.end = as.integer(tcgaData[,4]),#
+	num.mar = as.integer(tcgaData[,5]),#
+	seg.mean = as.numeric(tcgaData[,6]),#
+	stringsAsFactors=False#
+)
+cghData = data.frame(#
+	ID = as.character(tcgaData[,1]),#
+	chrom = as.character(tcgaData[,2]),#
+	loc.start = as.integer(tcgaData[,3]),#
+	loc.end = as.integer(tcgaData[,4]),#
+	num.mar = as.integer(tcgaData[,5]),#
+	seg.mean = as.numeric(tcgaData[,6]),#
+	stringsAsFactors=FALSE#
+)
+str(cghData)
+source('utils.R')
+fdir = "../dat/TCGA-GBM/CNV_Array/HMS__HG-CGH-415K_G4124A/Level_3/"#
+#
+cghData = read.tcga.cgh(fdir)
+str(cghData)
+library(CNTools)
+seg = CNSeg(cghData[1:10000,])
+seg
+mat= getRS(seg,by="gene")
+data(geneInfo)
+data("geneInfo")
+mat= getRS(seg,by="gene",imput=FALSE,XY=FALSE,geneMap=geneInfo)
+mat= getRS(seg,by="gene",imput=FALSE,XY=FALSE,geneMap=geneInfo,what="median")
+mat
+mat[1:10,]
+rs(mat)
+rownames(rs(mat))
+geneInfo
+head(geneInfo)
+geneInfo[geneInfo[,5]=="EGFR",]
+rs(mat)['1956',]
+rs(mat)[1:5,]
+rs(mat)[1:5,1:5]
+rm(list=ls())
+source('CRFfunctions.R')#
+#
+# # Y = matrix(rnorm(1000),nrow=200)#
+# X = matrix(rnorm(600),nrow=200)#
+#
+# tmp=GGM.linearCRF.path.network(Y,X,20)#
+# est=GGM.linearCRF.path.network.stars(Y,X,20,0.05)#
+#
+############ load real data. #
+source('utils.R')#
+library(CNTools)#
+data('geneInfo')#
+#### preprocess GBM CGH#
+fdir = "../dat/TCGA-GBM/CNV_Array/HMS__HG-CGH-415K_G4124A/Level_3/"#
+cghData = read.tcga.cgh(fdir)#
+seg = CNSeg(cghData)#
+mat= getRS(seg,by="gene",imput=FALSE,XY=FALSE,geneMap=geneInfo,what="median")
+dim(rs(mat))
+head(rs(mat))
+head(rs(mat)[,1:5])
+sum(rs(mat)[,5]=="EGFR")
+which(rs(mat)[,5]=="EGFR")
+barplot(rs(mat)[24005,])
+barplot(rs(mat)[24005,-(1:5)])
+b=rs(mat)[24005,])
+b=rs(mat)[24005,]
+b
+b[-(1:5)]
+plot(b[-(1:5)])
+barplot(b[-(1:5)])
+?barplot
+b=(b[-(1:5)])
+class(b)
+b
+b= as.numeric(b)
+barplot(b)
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/utils.R")
+fdir = "../dat/TCGA-GBM/CNV_Array/HMS__HG-CGH-415K_G4124A/Level_3/"#
+mat1 = read.tcga.cgh(fdir)
+fdir2 = "../dat/TCGA-GBM/CNV_Array/MSKCC__HG-CGH-244A/Level_3/"
+mat2 = read.tcga.cgh(fdir2)
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/utils.R")
+mat2 = read.tcga.cgh(fdir2)
+traceback()
+?getRS
+getRS
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/utils.R")
+mat2 = read.tcga.cgh(fdir2)
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/utils.R")
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/utils.R")
+mat2 = read.tcga.cgh(fdir2)
+traceback()
+source("/Volumes/Users/Shared/Paper4-CRF/CRF/src/utils.R")
+mat2 = read.tcga.cgh(fdir2)
+fdir = "../dat/TCGA-GBM/CNV_Array/MSKCC__HG-CGH-244A/Level_3/"
+tcgaData = c()#
+#
+for(i in dir(fdir,full.names=T))#
+{#
+	print(i)#
+	tmp =scan(i,what="character",skip=1)#
+	tmp = matrix(tmp,ncol=6,byrow=T)#
+	tcgaData = rbind(tcgaData,tmp)#
+}#
+#
+cghData = data.frame(#
+	ID = as.character(tcgaData[,1]),#
+	chrom = as.character(tcgaData[,2]),#
+	loc.start = as.integer(tcgaData[,3]),#
+	loc.end = as.integer(tcgaData[,4]),#
+	num.mar = as.integer(tcgaData[,5]),#
+	seg.mean = as.numeric(tcgaData[,6]),#
+	stringsAsFactors=FALSE#
+)
+library(CNTools)#
+data('geneInfo')#
+seg = CNSeg(cghData)
+seg
+?seg
+head(cghData)
+summary(cghData)
+cghData[is.na(cghData)]=0
+summary(cghData)
+seg = CNSeg(cghData)
+mat= getRS(seg,by="gene",imput=T,XY=FALSE,geneMap=geneInfo,what="median")
