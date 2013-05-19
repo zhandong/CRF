@@ -53,17 +53,27 @@ GGM.linearCRF.path.neighborhood = function(Y,X,node,nlams)
 
 GGM.linearCRF.path.network = function(Y,X,nlams,opt ="and")
 {	
+	require('multicore')
 	p=ncol(Y)
 	q=ncol(X)
 	Bhat = array(0,dim=c(p^2,q,nlams))
 	
-	
-	for(i in 1:ncol(Y))
-	{
+	foo = function(i){
 		nodei= GGM.linearCRF.path.neighborhood(Y,X,node=i,nlams=nlams)	
-		index = (1:p)+(i-1)*p
-		Bhat[index,,] = nodei$Bhat
 	}
+	
+	tmpList=mclapply(1:ncol(Y),foo);
+	for(i in 1:ncol(Y)){
+		index = (1:p)+(i-1)*p
+		Bhat[index,,] = tmpList[[i]]$Bhat
+	}
+	
+ 	# for(i in 1:ncol(Y))
+	# {
+		# nodei= GGM.linearCRF.path.neighborhood(Y,X,node=i,nlams=nlams)	
+		# index = (1:p)+(i-1)*p
+		# Bhat[index,,] = nodei$Bhat
+	# }
 	
 	Ahat = Bhat
 	for(i in 1:q){
@@ -130,7 +140,7 @@ GGM.linearCRF.path.network.stars = function(Y,X,nlams,stars.thresh,niter=100)
 		tmp = est$merge[[j]]
 		index = 1:p+(0:(p-1))*p
 		tmp= tmp[-index,]
-		est$var[j] = 4*sum(tmp*(1-tmp))/(p*(p-1)*q)	
+		est$var[j] = mean(2*tmp*(1-tmp))	
 	}
 	est$opt.index = max(which.max(est$var >=  stars.thresh)[1] - 1, 1)
 	est$path = GGM.linearCRF.path.network(Y,X,nlams=nlams)

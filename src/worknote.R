@@ -31,6 +31,8 @@ rna.mat3 = read.tcga.rna(fdir3)
 save.image('../dat/tcga-ggm-dat.rdata')
 
 ##### match sample ID
+
+load("../dat/tcga-ggm-dat.rdata")
 sampleID=c()
 sampleID$rna=c(colnames(rna.mat2),colnames(rna.mat3))
 sampleID$rna=substring(sampleID$rna,1,15)
@@ -60,9 +62,13 @@ dataX=tcgaData$dna[index,]
 dataX=dataX>log2(3/2) | dataX<log2(1/2)
 
 ### filtering Y by variance
-index2 = rowSds(tcgaData$rna) > quantile(rowSds(tcgaData$rna),0.95,na.rm=T)
+index2 = rowSds(tcgaData$rna) > quantile(rowSds(tcgaData$rna),0.90,na.rm=T)
 dataY = tcgaData$rna[index2,]
 dataY = dataY[!is.na(rownames(dataY)),]
+
+pathwayGenes = unique(scan('../dat/c2.cp.v3.1.symbols.gmt.txt',what="character"))
+dataY = dataY[rownames(dataY)%in% pathwayGenes,]
+dataY = rbind(dataY,tcgaData$rna[covNames,])
 
 save(dataX,dataY,file="../dat/XY-GBM-TCGA.rdata")
 
@@ -70,11 +76,53 @@ save(dataX,dataY,file="../dat/XY-GBM-TCGA.rdata")
 rm(list=ls())
 load('../dat/XY-GBM-TCGA.rdata')
 source('CRFfunctions.R')
+library(igraph)
 
 GBMNetwork=GGM.linearCRF.path.network.stars(t(dataY),t(dataX),20,0.05,niter=100)
+for(i in 1:5){
+#	tmp =matrix(   GBMNetwork$path$Ahat[,i,12],nrow=nrow(dataY))
+#	rownames(tmp)=rownames(dataY)
+#	colnames(tmp)=rownames(dataY)
+graphObj=graph.adjacency( matrix(   GBMNetwork$path$Ahat[,i,12],nrow=nrow(dataY)),mode="undirected")
+V(graphObj)$name= rownames(dataY)
+write.graph(graphObj,file=paste("../dat/GBM_",i,".gml",sep=""),format="gml")
+	
+}
+
+save.image("../dat/GBM-CRF-results.rdata")
+#################
 
 
+rm(list=ls())
+load('../dat/GBM-CRF-results.rdata')
+library(igraph)
 
+#GBMNetwork$var<0.001
+vd=c()
+for(i in 1:5){
+	tmp =matrix(GBMNetwork$path$Ahat[,i,12],nrow=nrow(dataY))
+	vd=rbind(vd,rowSums(tmp))
+}
+
+which(colSums(vd)==max(colSums(vd)),arr.ind=T)
+
+tnames=c("PTEN","CDK4","PDGFR4","EGFR","CDKN2A/B")
+for( hubID in order(colSums(vd),decreasing=T)[1:50]){
+	
+	pdf(file=paste('../pdfs/GBM_GGM_',rownames(dataY)[hubID],".pdf",sep=""),width=10,height=3)
+	par(mfrow=c(1,5))
+
+	for(i in 1:5){
+	tmp =matrix(GBMNetwork$path$Ahat[,i,12],nrow=nrow(dataY))
+	graphObj=graph.adjacency( matrix(   GBMNetwork$path$Ahat[,i,12],nrow=nrow(dataY)),mode="undirected")
+	V(graphObj)$name= rownames(dataY)
+	subgraphObj= induced.subgraph(graphObj,c(hubID,which(tmp[hubID,]==1,arr.ind=T)))
+	plot(subgraphObj,vertex.color="green",vertex.size=50)
+	title(main=tnames[i])
+	}
+		dev.off()
+
+}
 
 
 
